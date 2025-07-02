@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 圖像生成器 Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* For Webkit-based browsers (Chrome, Safari) */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #1a0529;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #00c6ff, #0072ff);
+        border-radius: 6px;
+        border: 2px solid #1a0529;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #00eaff, #008cff);
+      }
+
+      /* For Firefox */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: #00c6ff #1a0529;
+      }
+
+      /* Custom animation for spinner */
+      @keyframes spin-reverse { 
+        from { transform: rotate(360deg); } 
+        to { transform: rotate(0deg); } 
+      }
+      .animate-spin-reverse { 
+        animation: spin-reverse 1s linear infinite; 
+      }
+    </style>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/client": "https://esm.sh/react-dom@^19.1.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@^1.7.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div id="root"></div>
+    <script type="text/babel" data-type="module">
+// ===================================================================================
+//  WELCOME TO THE ALL-IN-ONE REACT APP!
+//  All .tsx/.ts files have been bundled into this single script tag to allow
+//  it to run directly in the browser from the filesystem (via file:// protocol)
+//  without needing a local server.
+//
+//  Order of components:
+//  1. Imports
+//  2. Icon Components
+//  3. Gemini API Service
+//  4. UI Components (Spinner, Notification, Cards, etc.)
+//  5. Constants
+//  6. Main App Component
+//  7. React DOM Render Call
+// ===================================================================================
+
+// 1. IMPORTS
+import React, { useState, useEffect, useCallback, StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
+import { GoogleGenAI } from '@google/genai';
+
+
+// 2. ICON COMPONENTS
+const SparklesIcon = ({ className = 'w-6 h-6' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.947-2.947L12 17.25l1.197-.398a3.375 3.375 0 002.947-2.947L16.5 12.75l.398 1.197a3.375 3.375 0 002.947 2.947L21 17.25l-1.197.398a3.375 3.375 0 00-2.947 2.947z" />
+  </svg>
+);
+const TrashIcon = ({ className = 'w-6 h-6' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.033-2.134H8.71c-1.123 0-2.033.954-2.033 2.134v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+  </svg>
+);
+const ShuffleIcon = ({ className = 'w-6 h-6' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.691L7.5 5.25m6.101 4.102a8.25 8.25 0 0111.667 0l3.181 3.183" />
+  </svg>
+);
+const DownloadIcon = ({ className = 'w-6 h-6' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+  </svg>
+);
+const DesktopIcon = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-1.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25z" />
+  </svg>
+);
+const DevicePhoneMobileIcon = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18h3" />
+  </svg>
+);
+const SquareIcon = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z" />
+  </svg>
+);
+const DocumentTextIcon = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+  </svg>
+);
+const CheckCircleIcon = ({ className = 'w-6 h-6' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+const ExclamationCircleIcon = ({ className = 'w-6 h-6' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+  </svg>
+);
+const KeyIcon = ({ className = 'w-6 h-6' }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+    </svg>
+);
+const ChevronDownIcon = ({ className = 'w-6 h-6' }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+    </svg>
+);
+
+// 3. GEMINI API SERVICE
+const beautifyPrompt = async (prompt, apiKey) => {
+  if (!apiKey) {
+    throw new Error("未配置API Key");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+  try {
+    const fullPrompt = `Enhance and beautify this image generation prompt, making it more vivid, detailed, and artistic. Make it suitable for an AI image generator. Only return the improved prompt as a single line of plain text. Do not include any conversational text, labels, quotation marks, or markdown formatting.
+Original prompt: "${prompt}"`;
+    
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-preview-04-17',
+        contents: fullPrompt,
+        config: { thinkingConfig: { thinkingBudget: 0 } }
+    });
+    
+    return response.text.trim();
+  } catch (error) {
+    console.error("Error beautifying prompt:", error);
+    throw new Error("美化提示詞失敗，請檢查API Key或稍後重試。");
+  }
+};
+
+const getRandomPrompt = async (apiKey) => {
+  if (!apiKey) {
+    throw new Error("未配置API Key");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+  try {
+    const prompt = `Generate a single, random, creative, and visually inspiring image generation prompt. The prompt should be concise yet imaginative. Return only the prompt text itself as a single line of plain text. Do not add any conversational text, labels, quotation marks, or markdown formatting. For example: "a crystal dragon sleeping on a bed of glowing mushrooms".`;
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-preview-04-17',
+        contents: prompt,
+        config: { thinkingConfig: { thinkingBudget: 0 } }
+    });
+
+    return response.text.trim();
+  } catch (error) {
+    console.error("Error getting random prompt:", error);
+    throw new Error("獲取隨機靈感失敗，請檢查API Key或稍後重試。");
+  }
+};
+
+
+// 4. UI COMPONENTS
+const Spinner = () => (
+  <div className="flex flex-col items-center justify-center gap-2" role="status" aria-label="Loading">
+    <div className="relative h-16 w-16">
+      <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-purple-500 animate-spin"></div>
+      <div className="absolute inset-2 rounded-full border-4 border-t-transparent border-l-transparent border-cyan-400 animate-spin-reverse"></div>
+    </div>
+    <span className="text-sm font-medium text-gray-300">正在生成...</span>
+  </div>
+);
+
+const Notification = ({ notification, onDismiss }) => {
+  const [exiting, setExiting] = useState(false);
+  const NOTIFICATION_TIMEOUT = 5000;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setExiting(true);
+      setTimeout(() => onDismiss(notification.id), 300);
+    }, NOTIFICATION_TIMEOUT);
+    return () => clearTimeout(timer);
+  }, [notification.id, onDismiss]);
+
+  const handleDismiss = () => {
+    setExiting(true);
+    setTimeout(() => onDismiss(notification.id), 300);
+  };
+
+  const isSuccess = notification.type === 'success';
+  const baseClasses = 'flex items-center w-full max-w-xs p-4 space-x-4 text-gray-100 bg-slate-800/80 backdrop-blur-md rounded-lg shadow-lg ring-1 ring-white/10 transition-all duration-300';
+  const positionClasses = exiting ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0';
+  const gradientBorder = isSuccess ? 'bg-gradient-to-r from-green-400 to-cyan-400' : 'bg-gradient-to-r from-red-500 to-orange-500';
+
+  return (
+    <div className={`${baseClasses} ${positionClasses}`} role="alert">
+      <div className={`inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg ${gradientBorder}`}>
+        {isSuccess ? <CheckCircleIcon className="w-5 h-5" /> : <ExclamationCircleIcon className="w-5 h-5" />}
+      </div>
+      <div className="text-sm font-normal">{notification.message}</div>
+      <button type="button" className="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-300" onClick={handleDismiss} aria-label="Close">
+        <span className="sr-only">Close</span>
+        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        </svg>
+      </button>
+    </div>
+  );
+};
+
+const NotificationContainer = ({ notifications, onDismiss }) => (
+  <div className="fixed top-5 right-5 z-50 space-y-4">
+    {notifications.map(n => <Notification key={n.id} notification={n} onDismiss={onDismiss} />)}
+  </div>
+);
+
+const ImageCard = ({ image, onDownload }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  return (
+    <div className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/30">
+      {!isLoaded && <div className="absolute inset-0 flex items-center justify-center"><Spinner /></div>}
+      <img src={image.url} alt={image.prompt} className={`h-full w-full object-cover transition-all duration-500 ${isLoaded ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-md scale-110'}`} onLoad={() => setIsLoaded(true)} onError={() => setIsLoaded(true)} />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="absolute bottom-0 left-0 p-4 text-white w-full">
+          <p className="text-sm line-clamp-3 mb-10">{image.prompt}</p>
+        </div>
+        <button onClick={() => onDownload(image)} className="absolute top-4 right-4 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-cyan-500" aria-label="Download image">
+          <DownloadIcon className="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const HistoryItem = ({ image, onDownload, onPreview }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const date = new Date(image.timestamp);
+  const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  return (
+    <div className="group relative flex items-center gap-4 rounded-lg bg-white/5 p-3 backdrop-blur-sm transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:shadow-purple-500/20">
+      <div className="h-16 w-16 flex-shrink-0 cursor-pointer overflow-hidden rounded-md" onClick={() => onPreview(image)}>
+        {!isLoaded && <div className="h-full w-full animate-pulse bg-slate-700"></div>}
+        <img src={image.url} alt={image.prompt} className={`h-full w-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`} onLoad={() => setIsLoaded(true)} />
+      </div>
+      <div className="flex-1 overflow-hidden">
+        <p className="truncate text-sm font-medium text-gray-200" title={image.prompt}>{image.prompt}</p>
+        <p className="text-xs text-gray-400">{image.style}</p>
+        <p className="text-xs text-gray-500">{formattedDate}</p>
+      </div>
+      <button onClick={() => onDownload(image)} className="ml-auto flex-shrink-0 rounded-full bg-black/20 p-2 text-gray-300 transition-all hover:bg-purple-600 hover:text-white group-hover:scale-110" aria-label="Download image">
+        <DownloadIcon className="h-5 w-5" />
+      </button>
+    </div>
+  );
+};
+
+// 5. CONSTANTS
+const ART_STYLES = [
+  { name: '🌸 日本動漫風', promptSuffix: ', japanese anime style, vibrant, detailed', icon: '🌸' },
+  { name: '🌿 吉卜力工作室', promptSuffix: ', ghibli studio style, whimsical, hand-drawn', icon: '🌿' },
+  { name: '🎪 卡通風格', promptSuffix: ', cartoon style, bold lines, colorful', icon: '🎪' },
+  { name: '🖌️ 水彩畫', promptSuffix: ', watercolor painting, soft edges, translucent', icon: '🖌️' },
+  { name: '🎨 油畫風格', promptSuffix: ', oil painting, textured, rich colors', icon: '🎨' },
+  { name: '💻 數位藝術', promptSuffix: ', digital art, concept art, hyperrealistic', icon: '💻' },
+  { name: '📷 寫實風格', promptSuffix: ', realistic, photorealistic, 8k', icon: '📷' },
+  { name: '✏️ 黑白素描', promptSuffix: ', black and white sketch, pencil drawing, detailed shading', icon: '✏️' },
+  { name: '🖍️ 色鉛筆', promptSuffix: ', colored pencil art, layered colors, detailed', icon: '🖍️' },
+  { name: '🌃 賽博朋克', promptSuffix: ', cyberpunk, neon lights, futuristic city, dystopian', icon: '🌃' },
+  { name: '📼 復古風格', promptSuffix: ', retro style, vintage, 80s aesthetic, film grain', icon: '📼' },
+];
+const DIMENSIONS = [
+  { name: '🖥️ 1920×1080', width: 1920, height: 1080, icon: <DesktopIcon /> },
+  { name: '📱 1080×1920', width: 1080, height: 1920, icon: <DevicePhoneMobileIcon /> },
+  { name: '⬜ 1024×1024', width: 1024, height: 1024, icon: <SquareIcon /> },
+  { name: '📄 512×768', width: 512, height: 768, icon: <DocumentTextIcon /> },
+];
+
+
+// 6. MAIN APP COMPONENT
+const App = () => {
+  const [prompt, setPrompt] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState(ART_STYLES[0].promptSuffix);
+  const [dimension, setDimension] = useState(DIMENSIONS[2]);
+  const [batchCount, setBatchCount] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isHelperLoading, setIsHelperLoading] = useState(null);
+  const [generatedImages, setGeneratedImages] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
+  
+  const [apiKey, setApiKey] = useState('');
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [showApiSettings, setShowApiSettings] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedHistory = localStorage.getItem('imageGenHistory');
+      if (storedHistory) setHistory(JSON.parse(storedHistory));
+      
+      const storedApiKey = localStorage.getItem('geminiApiKey');
+      if (storedApiKey) {
+        setApiKey(storedApiKey);
+        setApiKeyInput(storedApiKey);
+      } else {
+        setShowApiSettings(true); // Auto-open settings if no key
+      }
+    } catch (error) {
+      console.error("Failed to load from localStorage", error);
+      addNotification('無法加載本地設定', 'error');
+    }
+  }, []);
+  
+  const addNotification = (message, type) => {
+    setNotifications(prev => [...prev, { id: Date.now(), message, type }]);
+  };
+
+  const removeNotification = id => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+  
+  const handleSaveApiKey = () => {
+    if(!apiKeyInput.trim()){
+      addNotification('API Key不能為空', 'error');
+      return;
+    }
+    setApiKey(apiKeyInput);
+    localStorage.setItem('geminiApiKey', apiKeyInput);
+    addNotification('API Key 已成功保存', 'success');
+    setShowApiSettings(false);
+  };
+
+  const handleDownload = useCallback((image) => {
+    addNotification('圖像下載請求已發送...', 'success');
+    fetch(image.url)
+      .then(response => {
+        if (!response.ok) throw new Error(`Network response was not ok, status: ${response.status}`);
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        const safePrompt = image.prompt.replace(/[^a-z0-9]/gi, '_').slice(0, 30);
+        a.download = `pollinations_${safePrompt}.png`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        addNotification('圖像已開始下載', 'success');
+      })
+      .catch(err => {
+        console.error("Download failed:", err);
+        addNotification('下載失敗，圖片伺服器可能無回應', 'error');
+      });
+  }, []);
+  
+  const generateImages = async () => {
+    if (!prompt.trim()) {
+      addNotification('請輸入提示詞', 'error');
+      return;
+    }
+    setIsLoading(true);
+    setGeneratedImages([]);
+    const newImages = [];
+    const currentTimestamp = new Date().toISOString();
+
+    for (let i = 0; i < batchCount; i++) {
+        const seed = Math.floor(Math.random() * 100000);
+        const fullPrompt = encodeURIComponent(`${prompt}${selectedStyle}`);
+        const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=${dimension.width}&height=${dimension.height}&seed=${seed}&model=flux&nologo=true`;
+        const newImage = {
+            id: `${currentTimestamp}-${i}`,
+            prompt: prompt,
+            style: ART_STYLES.find(s => s.promptSuffix === selectedStyle)?.name || '自訂風格',
+            url: imageUrl,
+            width: dimension.width,
+            height: dimension.height,
+            timestamp: currentTimestamp,
+        };
+        newImages.push(newImage);
+    }
+    
+    setGeneratedImages(newImages);
+    setHistory(prev => {
+        const updatedHistory = [...newImages, ...prev].slice(0, 50);
+        try {
+            localStorage.setItem('imageGenHistory', JSON.stringify(updatedHistory));
+        } catch(error) {
+            console.error("Failed to save history to localStorage", error);
+            addNotification('無法保存歷史紀錄到本地儲存', 'error');
+        }
+        return updatedHistory;
+    });
+
+    setIsLoading(false);
+    addNotification(`已成功生成 ${batchCount} 張圖像`, 'success');
+  };
+  
+  const handleBeautify = async () => {
+    if (!prompt.trim()) {
+      addNotification('請先輸入提示詞再進行美化', 'error');
+      return;
+    }
+    setIsHelperLoading('beautify');
+    try {
+      const beautifulPrompt = await beautifyPrompt(prompt, apiKey);
+      setPrompt(beautifulPrompt);
+      addNotification('提示詞已美化', 'success');
+    } catch (e) {
+      addNotification(e.message || '美化失敗', 'error');
+    } finally {
+      setIsHelperLoading(null);
+    }
+  };
+
+  const handleRandom = async () => {
+    setIsHelperLoading('random');
+    try {
+      const randomPrompt = await getRandomPrompt(apiKey);
+      setPrompt(randomPrompt);
+      addNotification('已生成隨機靈感', 'success');
+    } catch (e) {
+      addNotification(e.message || '獲取靈感失敗', 'error');
+    } finally {
+      setIsHelperLoading(null);
+    }
+  };
+  
+  const handleClear = () => {
+    setPrompt('');
+    addNotification('提示詞已清空', 'success');
+  };
+
+  const isApiKeyMissing = !apiKey;
+
+  return (
+    <>
+      <NotificationContainer notifications={notifications} onDismiss={removeNotification} />
+      
+      {previewImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setPreviewImage(null)}>
+          <div className="relative max-w-4xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <img src={previewImage.url} alt={previewImage.prompt} className="object-contain w-full h-full rounded-lg shadow-2xl"/>
+            <button onClick={() => setPreviewImage(null)} className="absolute -top-3 -right-3 bg-white text-black rounded-full h-8 w-8 flex items-center justify-center text-2xl font-bold leading-none hover:bg-gray-200 transition" aria-label="關閉預覽">&times;</button>
+          </div>
+        </div>
+      )}
+
+      <div className="min-h-screen text-white p-4 sm:p-6 lg:p-8 font-sans">
+        <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Panel: Controls */}
+          <div className="lg:col-span-1 space-y-6">
+            <header className="p-4 rounded-xl bg-gradient-to-br from-purple-600/50 to-blue-500/50">
+              <h1 className="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-pink-300">AI 圖像生成器 Pro</h1>
+              <p className="text-center text-purple-200 mt-1">輸入您的創意，見證魔法</p>
+            </header>
+            
+            <div className="p-6 bg-slate-800/50 backdrop-blur-md rounded-xl ring-1 ring-white/10 space-y-4">
+               {/* API Key Settings */}
+               <div>
+                  <button onClick={() => setShowApiSettings(!showApiSettings)} className="flex justify-between items-center w-full text-left">
+                      <div className="flex items-center gap-2">
+                          <KeyIcon className="w-5 h-5 text-purple-300"/>
+                          <span className="font-medium text-purple-300">API Key 設定</span>
+                          {isApiKeyMissing && <span className="text-xs text-red-400">(必要)</span>}
+                      </div>
+                      <ChevronDownIcon className={`w-5 h-5 text-purple-300 transition-transform ${showApiSettings ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showApiSettings && (
+                      <div className="mt-4 space-y-3">
+                          <p className="text-xs text-slate-400">
+                            提示詞輔助功能 (隨機/美化) 需要 Google Gemini API Key。您可以從 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline hover:text-cyan-300">Google AI Studio</a> 免費獲取。
+                          </p>
+                          <input
+                              type="password"
+                              value={apiKeyInput}
+                              onChange={e => setApiKeyInput(e.target.value)}
+                              placeholder="請在此貼上您的 API Key"
+                              className="w-full bg-slate-900/70 border border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition"
+                          />
+                          <button onClick={handleSaveApiKey} className="w-full px-4 py-2 text-sm font-semibold rounded-md bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 transition-transform hover:scale-105">
+                              保存 Key
+                          </button>
+                      </div>
+                  )}
+              </div>
+
+               <hr className="border-slate-700" />
+            
+              {/* Prompt Input */}
+              <div>
+                <label htmlFor="prompt" className="block text-sm font-medium text-purple-300 mb-2">1. 輸入提示詞</label>
+                <div className="relative">
+                  <textarea id="prompt" rows={4} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="例如：一隻戴著太陽眼鏡的貓在月球上開跑車" className="w-full bg-slate-900/70 border border-slate-700 rounded-lg p-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition" />
+                   <div className="flex justify-end space-x-2 mt-2">
+                      <button onClick={handleRandom} disabled={isHelperLoading || isApiKeyMissing} title={isApiKeyMissing ? "請先設定 API Key" : "隨機靈感"} className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-transform hover:scale-105">
+                        {isHelperLoading === 'random' ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <ShuffleIcon className="w-4 h-4"/>} <span>隨機</span>
+                      </button>
+                      <button onClick={handleClear} disabled={!!isHelperLoading} className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 transition-transform hover:scale-105">
+                         <TrashIcon className="w-4 h-4"/> <span>清空</span>
+                      </button>
+                      <button onClick={handleBeautify} disabled={isHelperLoading || isApiKeyMissing} title={isApiKeyMissing ? "請先設定 API Key" : "美化描述"} className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-transform hover:scale-105">
+                        {isHelperLoading === 'beautify' ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <SparklesIcon className="w-4 h-4"/>} <span>美化</span>
+                      </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Style Selection */}
+              <div>
+                <label htmlFor="style" className="block text-sm font-medium text-purple-300 mb-2">2. 選擇藝術風格</label>
+                <div className="relative">
+                    <select id="style" value={selectedStyle} onChange={e => setSelectedStyle(e.target.value)} className="w-full bg-slate-900/70 border border-slate-700 rounded-lg p-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition appearance-none">
+                    {ART_STYLES.map(style => <option key={style.name} value={style.promptSuffix}>{style.icon} {style.name}</option>)}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+              </div>
+
+              {/* Dimension & Batch */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-purple-300 mb-2">3. 圖片尺寸</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {DIMENSIONS.map(d => (
+                      <button key={d.name} onClick={() => setDimension(d)} className={`flex items-center justify-center p-2 rounded-lg transition-all border-2 ${dimension.name === d.name ? 'border-cyan-400 bg-cyan-400/20 shadow-lg shadow-cyan-500/20' : 'border-slate-700 bg-slate-900/70 hover:border-slate-500 hover:bg-slate-700/50'}`} title={d.name}>
+                        {d.icon}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                 <div>
+                  <label htmlFor="batchCount" className="block text-sm font-medium text-purple-300 mb-2">4. 生成數量</label>
+                  <input type="number" id="batchCount" value={batchCount} min="1" max="10" onChange={e => setBatchCount(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))} className="w-full bg-slate-900/70 border border-slate-700 rounded-lg p-2.5 text-center focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition" />
+                </div>
+              </div>
+
+              {/* Generate Button */}
+              <button onClick={generateImages} disabled={isLoading} className="w-full text-lg font-bold py-3 px-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(56,189,248,0.3)] flex items-center justify-center gap-2">
+                {isLoading ? <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div> : '🚀'}
+                {isLoading ? '生成中...' : '開始生成'}
+              </button>
+            </div>
+
+            {/* History Panel */}
+            <div className="p-6 bg-slate-800/50 backdrop-blur-md rounded-xl ring-1 ring-white/10">
+              <h2 className="text-xl font-bold text-purple-300 mb-4">歷史紀錄</h2>
+              <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
+                {history.length > 0 ? history.map(img => <HistoryItem key={img.id} image={img} onDownload={handleDownload} onPreview={setPreviewImage} />) : <p className="text-center text-slate-400 py-8">還沒有歷史紀錄</p>}
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Panel: Image Display */}
+          <div className="lg:col-span-2 min-h-[60vh] lg:min-h-0 bg-slate-900/30 backdrop-blur-sm rounded-xl p-6 ring-1 ring-white/10 flex items-center justify-center">
+            {isLoading ? <Spinner /> : generatedImages.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-full overflow-y-auto pr-2">
+                {generatedImages.map(img => <ImageCard key={img.id} image={img} onDownload={handleDownload} />)}
+              </div>
+            ) : (
+              <div className="text-center text-slate-400">
+                <p className="text-4xl mb-4">🎨</p>
+                <h3 className="text-xl font-semibold">準備好創造藝術了嗎？</h3>
+                <p>生成的圖像將會顯示在這裡</p>
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
+    </>
+  );
+};
+
+
+// 7. REACT DOM RENDER CALL
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error("Could not find root element to mount to");
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+
+    </script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

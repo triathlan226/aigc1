@@ -1,0 +1,6 @@
+
+{
+  "name": "AI Image Generator Pro (Single File)",
+  "description": "An advanced AI image generator that allows users to create stunning visuals from text prompts with various artistic styles, custom dimensions, and batch generation capabilities, featuring a rich, neon-gradient user interface. This version is bundled into a single HTML file for easy, local execution without a server.",
+  "requestFramePermissions": []
+}
