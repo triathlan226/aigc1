@@ -145,7 +145,7 @@ const App: React.FC = () => {
     addNotification('提示詞已清空', 'success');
   };
 
-  const isApiKeyMissing = !process.env.API_KEY;
+  const isApiKeyMissing = !process.env.GEMINI_API_KEY;
 
   return (
     <>
