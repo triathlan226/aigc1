@@ -1,0 +1,869 @@
+{
+ "slug": "tsmc_2026q3",
+ "version": "完整解讀版",
+ "config": {
+  "series": "台積電法說會解讀",
+  "date": "2026.10.15",
+  "brand_left": "科技",
+  "brand_right": "人文",
+  "tagline": "事實 ｜ 推論 ｜ 觀點",
+  "bpm": 100
+ },
+ "footer": {
+  "cutoff": "資料截至 2026/10/15 法說會・非投資建議",
+  "sources": "來源：台積電 2026Q3 法說會、CNBC、經濟日報、中時、TrendForce、GF 新聞稿"
+ },
+ "scenes": [
+  {
+   "type": "hook",
+   "label": "台積電 2026 Q3 營收",
+   "from": 40.0,
+   "to": 46.7,
+   "decimals": 1,
+   "prefix": "$",
+   "suffix": "B",
+   "badge": "超越財測上緣",
+   "note": "季增 16.2%（美元）｜財測 US$44.6–45.8B",
+   "beats": 5
+  },
+  {
+   "type": "story",
+   "title": "① 第三季成績單",
+   "color": "cyan",
+   "beats": 20,
+   "blocks": [
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "營收（新台幣）",
+       "body": "1.494 兆"
+      },
+      {
+       "head": "季增｜年增",
+       "body": "17.6%｜50.9%"
+      }
+     ]
+    },
+    {
+     "type": "bignum",
+     "from": 20,
+     "to": 29.43,
+     "decimals": 2,
+     "prefix": "NT$",
+     "caption": "單季 EPS｜去年同期 17.44 元",
+     "color": "cyan"
+    },
+    {
+     "type": "text",
+     "text": "淨利約 NT$7,631 億，年增 68.7%",
+     "size": "M"
+    },
+    {
+     "type": "pill",
+     "text": "連續第 6 季獲利創新高・ROE 45.5%",
+     "color": "cyan"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "② 毛利率小降",
+   "color": "amber",
+   "beats": 20,
+   "blocks": [
+    {
+     "type": "gauge",
+     "min": 60,
+     "max": 70,
+     "step": 2,
+     "value": 66.4,
+     "decimals": 1,
+     "suffix": "%",
+     "caption": "毛利率｜Q2 67.7% → Q3 66.4%",
+     "color": "amber"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "營業利益率",
+       "body": "58.7%",
+       "color": "cyan"
+      },
+      {
+       "head": "營業費用率",
+       "body": "7.8%",
+       "color": "cyan"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "營益率高於財測上緣 58%",
+     "size": "M"
+    },
+    {
+     "type": "pill",
+     "text": "主因：2 奈米初期量產稀釋",
+     "color": "amber"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "③ 製程結構",
+   "color": "cyan",
+   "beats": 19,
+   "blocks": [
+    {
+     "type": "bignum",
+     "from": 60,
+     "to": 79,
+     "decimals": 0,
+     "suffix": "%",
+     "caption": "7 奈米以下占晶圓營收",
+     "color": "cyan"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "3 奈米",
+       "body": "33%"
+      },
+      {
+       "head": "5 奈米",
+       "body": "28%"
+      }
+     ]
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "2 奈米（首度入列）",
+       "body": "8%",
+       "color": "amber"
+      },
+      {
+       "head": "7 奈米",
+       "body": "10%"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "白話：越先進的製程，賺得越多",
+     "size": "S",
+     "color": "dim"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "④ HPC 撐起近七成",
+   "color": "cyan",
+   "beats": 19,
+   "blocks": [
+    {
+     "type": "bignum",
+     "from": 50,
+     "to": 68,
+     "decimals": 0,
+     "suffix": "%",
+     "caption": "HPC（含 AI）占營收｜季增 22%",
+     "color": "cyan"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "智慧手機 21%",
+       "body": "季增 10%"
+      },
+      {
+       "head": "車用 4%",
+       "body": "季增 23%",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "IoT 4%（季增 5%）｜消費電子 1%（季減 12%）",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "pill",
+     "text": "AI 是成長引擎",
+     "color": "cyan"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑤ 現金流與資產負債",
+   "color": "cyan",
+   "beats": 20,
+   "blocks": [
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "營業現金流",
+       "body": "NT$9,200億"
+      },
+      {
+       "head": "本季資本支出",
+       "body": "US$138億"
+      }
+     ]
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "現金及有價證券",
+       "body": "NT$4 兆"
+      },
+      {
+       "head": "發放現金股利",
+       "body": "NT$1,560億",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "庫存天數 82 天（減 5 天）｜應收 28 天",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "text",
+     "text": "賺的現金，足以支應大擴產",
+     "size": "M"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑥ 第四季財測",
+   "color": "cyan",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "bignum",
+     "from": 46.7,
+     "to": 53.3,
+     "decimals": 1,
+     "prefix": "US$",
+     "suffix": "B",
+     "caption": "營收中值｜區間 523–543 億美元",
+     "color": "cyan"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "中值季增",
+       "body": "14%"
+      },
+      {
+       "head": "中值年增",
+       "body": "58%"
+      }
+     ]
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "毛利率",
+       "body": "65–67%",
+       "color": "amber"
+      },
+      {
+       "head": "營業利益率",
+       "body": "56.5–58.5%",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "匯率假設：1 美元 = 31.8 新台幣",
+     "size": "S",
+     "color": "dim"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑦ 全年展望再上修",
+   "color": "cyan",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "bignum",
+     "from": 30,
+     "to": 44,
+     "decimals": 0,
+     "suffix": "%",
+     "caption": "2026 全年美元營收年增（公司預估）",
+     "color": "cyan"
+    },
+    {
+     "type": "text",
+     "text": "7 月時為「略高於 40%」",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "先進製程",
+       "body": "需求極強",
+       "color": "cyan"
+      },
+      {
+       "head": "消費性・價格敏感",
+       "body": "受漲價壓抑",
+       "color": "red"
+      }
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "2027 年規劃：保持審慎",
+     "color": "amber"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑧ 毛利率的拉扯",
+   "color": "amber",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "balance",
+     "left": {
+      "head": "壓力",
+      "body": "2奈米・海外廠",
+      "color": "red"
+     },
+     "right": {
+      "head": "支撐",
+      "body": "降本・產能調度",
+      "color": "cyan"
+     }
+    },
+    {
+     "type": "text",
+     "text": "海外廠稀釋：2026 全年約 2 個百分點",
+     "size": "M"
+    },
+    {
+     "type": "text",
+     "text": "未來幾年隨美國新廠量產，擴大到 3–4 個百分點",
+     "size": "S",
+     "color": "amber"
+    },
+    {
+     "type": "text",
+     "text": "公司：仍是各地區成本效率最高的製造商",
+     "size": "S",
+     "color": "dim"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑨ 資本支出：更大手筆",
+   "color": "cyan",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "2026 資本支出（重申）",
+       "body": "600–640 億美元"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "2026–2028 將「顯著高於」前三年",
+     "size": "M"
+    },
+    {
+     "type": "chain",
+     "items": [
+      "資本支出",
+      "產能",
+      "成長"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "設備漲價是真的，但支出主體來自長期需求",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "pill",
+     "text": "股利：穩定且持續增加",
+     "color": "amber"
+    }
+   ]
+  },
+  {
+   "type": "kinetic",
+   "label": "AI 需求：魏哲家怎麼說",
+   "beats": 22,
+   "items": [
+    {
+     "word": "極度強勁",
+     "sub": "「沒有看到任何放緩跡象」"
+    },
+    {
+     "word": "代理式AI",
+     "sub": "從聊天機器人走向 AI 助理"
+    },
+    {
+     "word": "開源模型",
+     "sub": "降低使用門檻 → 更多晶片需求"
+    },
+    {
+     "word": "CPU 起飛",
+     "sub": "代理式 AI 帶動 CPU、網通晶片"
+    },
+    {
+     "word": "供不應求",
+     "sub": "需求仍遠高於產能，努力縮小缺口"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑩ AI 加速器成長率",
+   "color": "cyan",
+   "beats": 21,
+   "blocks": [
+    {
+     "type": "text",
+     "text": "先前指引：2024–2029 年複合成長率",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "text",
+     "text": "「50% 中段到高段」",
+     "size": "L"
+    },
+    {
+     "type": "pill",
+     "text": "魏哲家：可能會更高",
+     "color": "amber"
+    },
+    {
+     "type": "text",
+     "text": "狹義定義：不含 CPU，但 CPU 仍是台積電生意",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "電力・資料中心",
+       "body": "已列入評估"
+      },
+      {
+       "head": "派團隊赴美實查",
+       "body": "目前良好"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑪ 全球擴產：近 20 座廠",
+   "color": "cyan",
+   "beats": 20,
+   "blocks": [
+    {
+     "type": "bignum",
+     "from": 0,
+     "to": 20,
+     "decimals": 0,
+     "prefix": "近 ",
+     "suffix": " 座",
+     "caption": "全球推進中的新廠",
+     "color": "cyan"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "台灣",
+       "body": "13 座"
+      },
+      {
+       "head": "海外",
+       "body": "5–6 座",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "台灣 13 座：先進製程＋先進封裝",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "pill",
+     "text": "「不會把食物留在桌上給別人」",
+     "color": "amber"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑫ 3 奈米產能大追加",
+   "color": "cyan",
+   "beats": 24,
+   "blocks": [
+    {
+     "type": "text",
+     "text": "罕見：成熟後的節點再加產能",
+     "size": "M",
+     "color": "amber"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "台灣新 3 奈米廠",
+       "body": "2027 上半年"
+      },
+      {
+       "head": "台灣再加一座",
+       "body": "2028 上半年",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "亞利桑那二廠",
+       "body": "2027 Q3"
+      },
+      {
+       "head": "日本二廠（3奈米）",
+       "body": "2028"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "亞利桑那二廠略為提前；時程為量產時間",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "text",
+     "text": "5 奈米設備轉 3 奈米；N7/N5/N3 彈性調度",
+     "size": "S",
+     "color": "dim"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑬ 2 奈米與 A14",
+   "color": "cyan",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "chain",
+     "items": [
+      "N2 量產",
+      "產能×2",
+      "A14"
+     ]
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "N2 家族",
+       "body": "良率佳"
+      },
+      {
+       "head": "N2 年產能",
+       "body": "2027 翻倍+"
+      }
+     ]
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "A14 風險試產",
+       "body": "2027",
+       "color": "amber"
+      },
+      {
+       "head": "A14 量產",
+       "body": "2028",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "A14 客戶熱度已高於 N2，規模預期更大",
+     "color": "cyan"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑭ 美國：德州與 Terafab",
+   "color": "amber",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "panel",
+     "title": "德州 評估中",
+     "caption": "已派團隊實地評估・尚無結論"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "Terafab",
+       "body": "與客戶洽談中",
+       "color": "amber"
+      },
+      {
+       "head": "底線",
+       "body": "須由台積電營運",
+       "color": "cyan"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "原因：大客戶多在美國，美國政府也支持",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "pill",
+     "text": "尚在討論・未定案",
+     "color": "red",
+     "outline": true
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "⑮ 先進封裝",
+   "color": "cyan",
+   "beats": 24,
+   "blocks": [
+    {
+     "type": "text",
+     "text": "已量產 5 倍光罩尺寸，良率優異",
+     "size": "M"
+    },
+    {
+     "type": "chain",
+     "items": [
+      "5 倍",
+      "9 倍",
+      "14 倍"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "CoWoS 仍是首選；同步開發 CoPoS 降成本",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "cards",
+     "items": [
+      {
+       "head": "格羅方德 GF 中介層",
+       "body": "20 億美元"
+      },
+      {
+       "head": "紐約 Malta 量產",
+       "body": "2028 上半年",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "後段產能偏緊，找夥伴一起供貨",
+     "color": "amber"
+    }
+   ]
+  },
+  {
+   "type": "kinetic",
+   "label": "Q&A 快問快答",
+   "beats": 22,
+   "items": [
+    {
+     "word": "High-NA",
+     "sub": "2030 年導入：成熟度、成本到位才用"
+    },
+    {
+     "word": "禁轉售",
+     "sub": "不允許客戶轉租或拍賣產能"
+    },
+    {
+     "word": "一視同仁",
+     "sub": "IDM 與 IC 設計客戶同等對待"
+    },
+    {
+     "word": "策略定價",
+     "sub": "依市場、地區、製程；美國產另計"
+    },
+    {
+     "word": "沒有天花板",
+     "sub": "獲利能力無上限，但不會一夕暴增"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "投資人怎麼看",
+   "tag": "推論・非事實",
+   "color": "amber",
+   "beats": 22,
+   "blocks": [
+    {
+     "type": "balance",
+     "left": {
+      "head": "成長",
+      "body": "AI 供不應求"
+     },
+     "right": {
+      "head": "獲利率",
+      "body": "稀釋擴大"
+     }
+    },
+    {
+     "type": "text",
+     "text": "營收再上修＋擴產加速：需求能見度高",
+     "size": "S",
+     "color": "cyan"
+    },
+    {
+     "type": "text",
+     "text": "毛利率連兩季走低：2 奈米與海外廠是成本",
+     "size": "S",
+     "color": "amber"
+    },
+    {
+     "type": "text",
+     "text": "台股供應鏈：設備、封測、廠務受惠擴產",
+     "size": "S",
+     "color": "dim"
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "風險與反證",
+   "tag": "推論・非事實",
+   "color": "red",
+   "beats": 24,
+   "blocks": [
+    {
+     "type": "text",
+     "text": "消費性需求轉弱、零組件漲價",
+     "size": "M",
+     "color": "red"
+    },
+    {
+     "type": "text",
+     "text": "AI 資本支出若放緩 → 擴產恐過剩",
+     "size": "M",
+     "color": "red"
+    },
+    {
+     "type": "text",
+     "text": "海外稀釋擴大、設備漲價",
+     "size": "M",
+     "color": "red"
+    },
+    {
+     "type": "text",
+     "text": "反證條件（觀察指標）：",
+     "size": "S",
+     "color": "dim"
+    },
+    {
+     "type": "pill",
+     "text": "毛利率跌破指引下緣 65%",
+     "color": "red",
+     "outline": true
+    },
+    {
+     "type": "pill",
+     "text": "雲端業者資本支出下修",
+     "color": "red",
+     "outline": true
+    }
+   ]
+  },
+  {
+   "type": "story",
+   "title": "接下來看什麼",
+   "color": "cyan",
+   "beats": 20,
+   "blocks": [
+    {
+     "type": "text",
+     "text": "每月 10 日前後：月營收",
+     "size": "M"
+    },
+    {
+     "type": "text",
+     "text": "2027 年 1 月：Q4 法說會、2027 財測",
+     "size": "M"
+    },
+    {
+     "type": "chain",
+     "items": [
+      "N2",
+      "毛利率",
+      "美國廠"
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Q4 指引中值：營收 533 億美元、毛利率 66%",
+     "size": "S",
+     "color": "dim"
+    }
+   ]
+  }
+ ]
+}
