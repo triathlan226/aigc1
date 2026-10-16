@@ -13,6 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 W, H, FPS = 1080, 1920, 30
 CX = W / 2
 SANS, BLACK, MED, MONO = "Noto Sans CJK TC", "Noto Sans CJK TC Black", "Noto Sans CJK TC Medium", "Noto Sans Mono CJK TC"
+SERIF = "Noto Serif CJK TC Black"
 BG0, BG1 = (0.035, 0.047, 0.086), (0.067, 0.086, 0.149)
 COL = {"green": (0.52, 0.86, 0.27), "cyan": (0.30, 0.82, 0.98), "amber": (1.00, 0.72, 0.30),
        "red": (1.00, 0.42, 0.40), "white": (0.97, 0.98, 0.99), "dim": (0.66, 0.71, 0.79),
@@ -356,7 +357,25 @@ def sc_outro(ctx, s, u, D):
     rise(ctx, s["foot2"], MED, 28, CX, 1455, "faint", seg(u, 2.4, 2.8), a)
     rise(ctx, s["foot3"], MED, 28, CX, 1505, "faint", seg(u, 2.5, 2.9), a)
 
-FUN = {"hook": sc_hook, "title": sc_title, "chapter": sc_chapter, "kinetic": sc_kinetic, "outro": sc_outro}
+def sc_brand(ctx, s, u, D):
+    y0 = 860; R = 380; ap = eio(seg(u, 0.05, 0.9)); a = 1 - seg(u, D - 0.6, D) * 0.9
+    ctx.set_line_width(5); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+    ctx.set_source_rgba(*COL["cyan"], 0.85 * a); ctx.arc_negative(CX, y0, R, -math.pi / 2, -math.pi / 2 - math.pi * ap); ctx.stroke()
+    ctx.set_source_rgba(*COL["amber"], 0.85 * a); ctx.arc(CX, y0, R, -math.pi / 2, -math.pi / 2 + math.pi * ap); ctx.stroke()
+    hh = 170 * eo(seg(u, 0, 0.35)); ctx.set_source_rgba(*COL["white"], a); rrect(ctx, CX - 3, y0 - hh / 2, 6, max(hh, 0.1), 3); ctx.fill()
+    p = eo(seg(u, 0.15, 0.6))
+    for txt, fam, colr, side in (("科技", BLACK, COL["cyan"], -1), ("人文", SERIF, COL["amber"], 1)):
+        font(ctx, fam, 150); w1 = tw(ctx, txt)
+        ctx.save()
+        if side < 0: ctx.rectangle(0, 0, CX - 28, H)
+        else: ctx.rectangle(CX + 28, 0, W, H)
+        ctx.clip(); ctx.set_source_rgba(*colr, a)
+        xc = lerp(CX - side * w1 / 2, CX + side * (40 + w1 / 2), p)
+        ctx.move_to(xc - w1 / 2, y0 + 150 * 0.36); ctx.show_text(txt); ctx.restore()
+    rise(ctx, s["tagline"], MED, 44, CX, y0 + 180, "white", seg(u, 0.7, 1.1), a)
+    rise(ctx, s["sub"], MED, 32, CX, 1380, "dim", seg(u, 1.0, 1.4), a)
+
+FUN = {"hook": sc_hook, "title": sc_title, "chapter": sc_chapter, "kinetic": sc_kinetic, "outro": sc_outro, "brand": sc_brand}
 
 # ---------------- timeline ----------------
 t = 0.0
@@ -389,7 +408,18 @@ def hud(ctx, t, si):
     col = c(s.get("color", "green"))
     ctx.set_source_rgba(*col, 1); rrect(ctx, x0, y, max(6, (x1 - x0) * t / DUR), 6, 3); ctx.fill()
     font(ctx, MED, 27); lab = META["disclaimer"]; ctx.set_source_rgba(*COL["dim"], 0.85)
-    ctx.move_to(CX - tw(ctx, lab) / 2, 1800); ctx.show_text(lab)
+    if s["type"] == "brand":
+        ctx.move_to(CX - tw(ctx, lab) / 2, 1800); ctx.show_text(lab); return
+    ctx.move_to(60, 1800); ctx.show_text(lab)
+    brand_mark(ctx, W - 60, 1790, 30, 0.9)
+
+def brand_mark(ctx, xr, yc, sz, a):
+    """Small right-aligned 科技｜人文 mark; yc = visual centre."""
+    font(ctx, SANS, sz); w1 = tw(ctx, "科技"); font(ctx, SERIF, sz); w2 = tw(ctx, "人文"); gap = sz * 0.55
+    x = xr - (w1 + w2 + 2 * gap)
+    font(ctx, SANS, sz); ctx.set_source_rgba(*COL["cyan"], a); ctx.move_to(x, yc + sz * 0.36); ctx.show_text("科技")
+    ctx.set_source_rgba(*COL["white"], 0.55 * a); ctx.rectangle(x + w1 + gap - 1.5, yc - sz * 0.5, 3, sz); ctx.fill()
+    font(ctx, SERIF, sz); ctx.set_source_rgba(*COL["amber"], a); ctx.move_to(x + w1 + 2 * gap, yc + sz * 0.36); ctx.show_text("人文")
 
 def frame(t):
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
@@ -429,7 +459,7 @@ def video(out):
     lst = os.path.join(work, "list.txt"); open(lst, "w").write("".join(f"file '{x}'\n" for x in segs))
     from music import synth
     wav = os.path.join(work, "music.wav")
-    MAP = {"hook": "hook", "title": "story", "chapter": "story", "kinetic": "kinetic", "outro": "logo"}
+    MAP = {"hook": "hook", "title": "story", "chapter": "story", "kinetic": "kinetic", "outro": "story", "brand": "logo"}
     synth([{"start": s["start"], "dur": s["dur"], "type": MAP[s["type"]]} for s in SCENES], BPM, wav)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-i", wav,
                     "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "44100", "-shortest", "-movflags", "+faststart", out], check=True)
