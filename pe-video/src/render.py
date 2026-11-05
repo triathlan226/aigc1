@@ -219,13 +219,13 @@ def P_highknee(p):
     return dict(thL=90 * l, shL=-5 * l, thR=90 * r, shR=-5 * r, uaL=-45 * s, faL=-45 * s + 90, uaR=45 * s, faR=45 * s + 90, lean=0, dy=-14 * abs(s))
 def P_buttkick(p):
     s = math.sin(2 * math.pi * p); l, r = max(0, s), max(0, -s)
-    return dict(thL=-8 * l, shL=-168 * l, thR=-8 * r, shR=-168 * r, uaL=-35 * s, faL=-35 * s + 90, uaR=35 * s, faR=35 * s + 90, lean=4, dy=-10 * abs(s))
+    return dict(thL=-18 * l, shL=-150 * l, thR=-18 * r, shR=-150 * r, uaL=-35 * s, faL=-35 * s + 90, uaR=35 * s, faR=35 * s + 90, lean=4, dy=-10 * abs(s))
 def P_lunge(p):
     k = (math.sin(2 * math.pi * p - math.pi / 2) * .5 + .5)  # 0 站 → 1 蹲低
     return dict(thL=80 * k, shL=5 * k, thR=-30 * k, shR=-95 * k, uaL=0, faL=0, uaR=0, faR=0, lean=0, dy=70 * k)
 def P_armcircle(p, size=1.):
-    ang = 360 * p
-    return dict(thL=0, shL=0, thR=0, shR=0, uaL=180 + ang, faL=180 + ang, uaR=ang, faR=ang, lean=0)
+    ang = 360 * p + 60  # 側視：雙臂同向向前繞，後臂略落後
+    return dict(thL=0, shL=0, thR=0, shR=0, uaL=ang, faL=ang, uaR=ang - 25, faR=ang - 25, lean=0)
 def P_quad():
     return dict(thL=8, shL=-160, thR=0, shR=0, uaL=-35, faL=-110, uaR=95, faR=95, lean=4)
 def P_static_bad():  # 壓腿（弓步前壓）
@@ -278,7 +278,7 @@ def sc_why(c, t, S, L):
         text(c, f"{bpm:.0f}", 1560, 410, 64, DK, "K", alpha=a); text(c, "心跳 bpm", 1560, 530, 34, ORG, "K", alpha=a)
         chip(c, "心肺逐步進入狀態", 1560, 680, ORG, a, 34)
     if t > S[3]:
-        a = A(t, S[3]); num_badge(c, "3", 960, 290, CYAN, a)
+        a = A(t, S[3]); num_badge(c, "3", 715, 880, CYAN, a)
         for jx, jy in ((960, 520), (960, 610), (930, 380)):
             put(c, circ(int(22 + 8 * abs(math.sin(t * 4))), CYAN, 150), jx, jy, alpha=a)
         chip(c, "關節、動作先活動開", 960, 880 - 0, CYAN, a, 34)
@@ -310,14 +310,15 @@ def sc_step1(c, t, S, L):
     if t > S[1] - .2:
         a = A(t, S[1] - .2)
         num_badge(c, "1", 200, 160 + 0, RED, a); text(c, "先動起來", 290, 160, 64, WH, "K", anc="lm", alpha=a)
-        x = 250 + ((t - S[1]) * 260) % 750
+        x = 250 + ((t - S[1]) * 260) % 650
         figure(c, x, P_jog(t * 1.7), WH, 1.1, a)
         chip(c, "慢跑／跳繩 約 5 分鐘", 1350, 260, RED, A(t, S[1] + .5), 44)
         chip(c, "微微發熱、有點流汗", 1350, 360, RED, A(t, S[1] + 1.5), 44)
 
 def sc_step2(c, t, S, L):
     num_badge(c, "2", 200, 160, ORG, A(t, .05)); text(c, "動態伸展：邊動邊拉", 290, 160, 64, WH, "K", anc="lm", alpha=A(t, .1))
-    moves = [(S[1], "高抬腿", P_highknee, 1.6), (S[2], "踢臀跑", P_buttkick, 1.6), (S[3], "弓箭步走", P_lunge, .55), (S[4], "手臂繞環", P_armcircle, .8)]
+    moves = [(S[1], "高抬腿", P_highknee, 1.6), (S[2], "踢臀跑", P_buttkick, 1.6), (S[3], "弓箭步走", P_lunge, 1.1), (S[4], "手臂繞環", P_armcircle, .8)]
+    PH = (.25, .25, .3, 0)  # 起始相位：一切換就是該動作的招牌姿勢
     cur = None
     for i, mv in enumerate(moves):
         if t >= mv[0] - .2: cur = (i, mv)
@@ -326,12 +327,19 @@ def sc_step2(c, t, S, L):
     else:
         i, (t0, nm, fn, sp) = cur; a = A(t, t0 - .2, .3)
         x = 700 + ((t - t0) * (120 if i < 3 else 0)) % 500
-        figure(c, x, fn((t - t0) * sp), ORG, 1.25, a)
+        figure(c, x, fn((t - t0 + .2) * sp + PH[i]), ORG, 1.25, a)
         chip(c, nm, 1450, 360, ORG, a, 64, fill=ORG)
         for k, (_, n2, _, _) in enumerate(moves):
             col = ORG if k == i else (70, 80, 100)
             box(c, 1300 + k * 100, 500, 80, 14, col, 255, 7, alpha=A(t, .3))
-        if i == 3: chip(c, "由小到大、由慢到快", 1450, 620, LIME, A(t, t0 + 1.2), 40)
+        if i == 3:
+            chip(c, "由小到大、由慢到快", 1450, 620, LIME, A(t, t0 + 1.2), 40)
+            sy, R_ = GROUND - 176 * 1.25 - 113 * 1.25, 126 * 1.25 + 8  # 肩膀位置、手臂長
+            ImageDraw.Draw(c).arc((x - R_, sy - R_, x + R_, sy + R_), 0, 360, fill=mix(ORG, BGC, .35 * a) + (255,), width=5)
+            ar = math.radians(-60); hx, hy = x + R_ * math.cos(ar), sy + R_ * math.sin(ar)  # 下→前→上：畫面逆時針
+            tx, ty = math.sin(ar), -math.cos(ar); nx, ny = -ty, tx  # 切線（運動方向）與法線
+            ImageDraw.Draw(c).polygon([(hx + 24 * tx, hy + 24 * ty), (hx - 10 * tx + 14 * nx, hy - 10 * ty + 14 * ny),
+                                       (hx - 10 * tx - 14 * nx, hy - 10 * ty - 14 * ny)], fill=mix(ORG, BGC, .8 * a) + (255,))
 
 def sc_step3(c, t, S, L):
     num_badge(c, "3", 200, 160, CYAN, A(t, .05)); text(c, "專項動作", 290, 160, 64, WH, "K", anc="lm", alpha=A(t, .1))
@@ -344,8 +352,8 @@ def sc_step3(c, t, S, L):
     box(c, 1480, 330, 120, 10, ORG, 255, 5, alpha=A(t, .2)); line(c, (1540, 250), (1540, 760), GR, 8, A(t, .2))
     chip(c, "打籃球 → 運球、投籃、漸進衝刺", 960, 880 - 0, CYAN, A(t, .8), 40)
     if t > S[1]:
-        a = A(t, S[1], .4); box(c, 1500, 560, 520, 160, DK, 235, 28, alpha=a, outline=LIME, ow=4)
-        text(c, "全部約", 1500, 520, 40, GR, "B", alpha=a); text(c, "10–15 分鐘", 1500, 590, 70, LIME, "K", alpha=a)
+        a = A(t, S[1], .4); box(c, 1200, 640, 480, 160, DK, 235, 28, alpha=a, outline=LIME, ow=4)
+        text(c, "全部約", 1200, 600, 40, GR, "B", alpha=a); text(c, "10–15 分鐘", 1200, 670, 70, LIME, "K", alpha=a)
 
 def sc_cool(c, t, S, L):
     text(c, "靜態伸展 → 運動後收操", 960, 150, 76, WH, "K", alpha=A(t, .1))

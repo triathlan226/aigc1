@@ -11,7 +11,12 @@ if os.environ.get("SSL_CERT_FILE"):
 norm = lambda s: re.sub(r"[^\w]", "", s)
 async def one(sid, text):
     mp3 = f"aud/{sid}.mp3"
-    await edge_tts.Communicate(text, VOICE, rate="+5%").save(mp3)
+    for k in range(8):  # Edge 服務偶爾回空音訊（NoAudioReceived）：退避重試
+        try:
+            await edge_tts.Communicate(text, VOICE, rate="+5%").save(mp3); break
+        except edge_tts.exceptions.NoAudioReceived:
+            if k == 7: raise
+            print(f"  {sid} 無音訊，{15 * (k + 1)} 秒後重試", flush=True); await asyncio.sleep(15 * (k + 1))
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", mp3, "-ar", "24000", "-ac", "1", f"aud/{sid}.wav"], check=True)
 async def main(ids):
     os.makedirs("aud", exist_ok=True)

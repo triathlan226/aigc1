@@ -8,3 +8,8 @@ mix.wav
 *.mp3
 __pycache__/
 timeline.json
+*.stt.txt
+run.log
+run2.log
+parts.txt
+run3.log
