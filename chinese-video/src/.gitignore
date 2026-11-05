@@ -1,0 +1,10 @@
+*.otf
+aud2/
+prev/
+part*.mp4
+video.mp4
+final.mp4
+mix.wav
+*.mp3
+__pycache__/
+timeline.json
