@@ -316,16 +316,15 @@ def sc_comp(c, t, S, L):
 
 def sc_rhythm(c, t, S, L):
     text(c, "每分鐘 110 下", 960, 150, 80, INK, "K", alpha=A(t, .1))
-    t0 = S[0] + (L - 7.3 - S[0])  # 配音結束後節拍開始（與 mix.py 同步）
-    t0 = L - 7.3
-    on = t >= t0
+    t0 = L - 7.3  # 節拍起點＝段長−7.3 秒（與 mix.py 同一公式：b0 = t0 + len − 7.3）
+    on = t0 <= t < t0 + 12 * BEAT  # 共 12 拍，與 mix.py 的 12 下 tick 對齊
     ph = ((t - t0) % BEAT) / BEAT if on else 0
     press = math.exp(-ph * 6) if on else 0
     victim(c, 820, 700, 1.2, A(t, .2))
     hands(c, 760, 660, 34 * press, A(t, .2))
     put(c, heart_patch(9, RED), 1470, 460, alpha=A(t, .3), scale=1 + .18 * press)
     if on:
-        n = int((t - t0) / BEAT) + 1
+        n = min(12, int((t - t0) / BEAT) + 1)
         text(c, str(n), 1470, 450, 110, WH, "K", alpha=1)
         text(c, "跟著節拍數！", 1470, 690, 50, RED, "K", alpha=A(t, t0))
 
