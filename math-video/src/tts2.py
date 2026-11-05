@@ -25,18 +25,19 @@ def stt(f):
         time.sleep(10+10*i)
     return ""
 norm=lambda s: re.sub(r"[^\w]","",s)
-mode=sys.argv[1]; ids=sys.argv[2:]
-for sid,segs,_ in SCENES:
-    if ids and sid not in ids: continue
-    text="".join(s for s,_ in segs)
-    for attempt in range(3):
-        out=f"aud/{sid}.wav"
-        if not tts(text,out,mode): print(sid,"TTS 失敗"); break
-        w=wave.open(out); d=w.getnframes()/24000; rate=len(norm(text))/d
-        heard=stt(out); sim=difflib.SequenceMatcher(None,norm(text),norm(heard)).ratio()
-        extra=len(norm(heard))-len(norm(text))
-        ok= rate>3.3 and sim>0.8 and extra<8
-        print(f"{sid:7} 第{attempt+1}次 {d:5.1f}s 每秒{rate:.1f}字 相似度{sim:.2f} 多出{extra}字 {'OK' if ok else 'NG'}")
-        open(f"aud/{sid}.stt.txt","w").write(heard)
-        if ok: break
-        if not ok and attempt==2: print("   聽寫:",heard[:200])
+if __name__=="__main__":
+  mode=sys.argv[1]; ids=sys.argv[2:]
+  for sid,segs,_ in SCENES:
+      if ids and sid not in ids: continue
+      text="".join(s for s,_ in segs)
+      for attempt in range(3):
+          out=f"aud/{sid}.wav"
+          if not tts(text,out,mode): print(sid,"TTS 失敗"); break
+          w=wave.open(out); d=w.getnframes()/24000; rate=len(norm(text))/d
+          heard=stt(out); sim=difflib.SequenceMatcher(None,norm(text),norm(heard)).ratio()
+          extra=len(norm(heard))-len(norm(text))
+          ok= rate>3.3 and sim>0.8 and extra<8
+          print(f"{sid:7} 第{attempt+1}次 {d:5.1f}s 每秒{rate:.1f}字 相似度{sim:.2f} 多出{extra}字 {'OK' if ok else 'NG'}")
+          open(f"aud/{sid}.stt.txt","w").write(heard)
+          if ok: break
+          if not ok and attempt==2: print("   聽寫:",heard[:200])

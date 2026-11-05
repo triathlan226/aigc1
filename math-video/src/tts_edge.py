@@ -4,6 +4,10 @@ import asyncio, sys, os, subprocess, re, difflib, wave
 import edge_tts
 from script import SCENES
 VOICE = "zh-TW-YunJheNeural"
+# edge-tts 固定用 certifi 憑證；在有 TLS 代理的環境（SSL_CERT_FILE）補上該 CA
+if os.environ.get("SSL_CERT_FILE"):
+    import edge_tts.communicate as _c
+    _c._SSL_CTX.load_verify_locations(os.environ["SSL_CERT_FILE"])
 norm = lambda s: re.sub(r"[^\w]", "", s)
 async def one(sid, text):
     mp3 = f"aud/{sid}.mp3"
