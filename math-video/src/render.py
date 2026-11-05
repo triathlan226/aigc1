@@ -257,7 +257,7 @@ def sc_comp(c, t, S, L):
     text(c, "complement", 960, 225, 36, G, "R", alpha=A(t, .3))
     if t > S[1]:
         aa = A(t, S[1]); box(c, 960, 300, 640, 70, DK, 200, 35, alpha=aa)
-        text(c, "正面打不贏 → 繞到後面打", 960, 300, 42, WH, alpha=aa)
+        text(c, "直接算不完 → 改算相反情況", 960, 300, 42, WH, alpha=aa)
     if t > S[2] - .2:
         aa = A(t, S[2] - .2, .5); x0, x1, y0, y1 = 360, 1560, 380, 700
         box(c, 960, 540, 1200, 320, (40, 56, 96), 255, 20, alpha=aa)
@@ -312,7 +312,7 @@ def sc_result(c, t, S, L):
         aa = A(t, S[2]); x8 = 360 + 1200 * .08
         box(c, x8, 760, 8, 90, WH, 255, 3, alpha=aa)
         text(c, "直覺 8%", x8, 830, 38, WH, alpha=aa)
-        text(c, "快 9 倍！", 1600, 640, 80, C, "K", alpha=A(t, S[2] + .5, .3), rot=10, scale=1.5 - .5 * eo(A(t, S[2] + .5, .3)), stroke=5)
+        text(c, "約 8.8 倍！", 1600, 640, 80, C, "K", alpha=A(t, S[2] + .5, .3), rot=10, scale=1.5 - .5 * eo(A(t, S[2] + .5, .3)), stroke=5)
 
 def bp(n):
     q = 1.
@@ -384,7 +384,7 @@ def sc_why(c, t, S, L):
             text(c, "2", 1366, 930, 34, Y, "K", alpha=ab); text(c, "= 435", 1500, 905, 70, Y, "K", alpha=ab)
     if t > S[5]:
         aa = A(t, S[5], .3)
-        text(c, "機會多 15 倍！", 960, 520, 54, Y, "K", alpha=aa, scale=1.3 - .3 * eo(aa), stroke=6)
+        text(c, "配對數是 15 倍！", 960, 520, 54, Y, "K", alpha=aa, scale=1.3 - .3 * eo(aa), stroke=6)
 
 def alarm(c, t, a):
     fl = 0.75 + 0.25 * math.sin(t * 9)
@@ -413,7 +413,7 @@ def sc_exam(c, t, S, L):
 def sc_answer(c, t, S, L):
     alarm(c, t, 1); quiz_card(c, 1)
     if t > S[0]:
-        aa = A(t, S[0]); text(c, "反面 A′ = 5 次全部反面", 960, 575, 56, M, "K", alpha=aa)
+        aa = A(t, S[0]); text(c, "餘事件 A′：5 次全部都是反面", 960, 575, 56, M, "K", alpha=aa)
     if t > S[1]:
         aa = A(t, S[1])
         text(c, "P(A′) = (", 760, 700, 64, WH, "K", anc="rm", alpha=aa)
@@ -433,9 +433,9 @@ def sc_answer(c, t, S, L):
 
 def sc_end(c, t, S, L):
     aa = A(t, .1, .5)
-    box(c, 960, 260, 1300, 230, DK, 230, 36, alpha=aa, outline=Y, ow=5)
-    text(c, "正面難算，就算反面", 960, 225, 92, Y, "K", alpha=aa, scale=.9 + .1 * eob(aa))
-    text(c, "P(A) = 1 − P(A′)　看到「至少」先想它", 960, 315, 40, WH, "B", alpha=A(t, .6))
+    box(c, 960, 260, 1500, 230, DK, 230, 36, alpha=aa, outline=Y, ow=5)
+    text(c, "直接算很難，就改算餘事件", 960, 225, 92, Y, "K", alpha=aa, scale=.9 + .1 * eob(aa))
+    text(c, "P(A) = 1 − P(A′)　看到「至少」先想餘事件", 960, 315, 40, WH, "B", alpha=A(t, .6))
     if t > S[1]:
         ab = A(t, S[1])
         box(c, 960, 560, 1300, 170, mix(M, DK, .3), 255, 30, alpha=ab)
