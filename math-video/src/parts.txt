@@ -1,0 +1,8 @@
+file '/home/user/aigc1/math-video/src/part0.mp4'
+file '/home/user/aigc1/math-video/src/part1.mp4'
+file '/home/user/aigc1/math-video/src/part2.mp4'
+file '/home/user/aigc1/math-video/src/part3.mp4'
+file '/home/user/aigc1/math-video/src/part4.mp4'
+file '/home/user/aigc1/math-video/src/part5.mp4'
+file '/home/user/aigc1/math-video/src/part6.mp4'
+file '/home/user/aigc1/math-video/src/part7.mp4'
