@@ -8,3 +8,4 @@ mix.wav
 *.mp3
 __pycache__/
 timeline.json
+parts.txt

@@ -90,6 +90,7 @@ def rrect(w, h, r, fill, a=255, outline=None, ow=0):
     return _rc[k]
 
 def box(c, x, y, w, h, fill, a=255, r=24, alpha=1., scale=1., outline=None, ow=0, anc="mm"):
+    if w < 2 or h < 2: return  # 動畫起點寬度為 0 時 PIL 會報錯
     put(c, rrect(int(w), int(h), r, fill, a, outline, ow), x, y, anc, alpha, scale)
 
 _pc = {}
@@ -288,14 +289,14 @@ def sc_hook(c, t, S, L):
             ab = A(t, S[0] + .3) * a
             overlay(c, GREEN, C, .85 * ab); overlay(c, AFRICA, GRN, .85 * ab)
             label(c, "格陵蘭", *lonlat_xy(-42, 74) + [0, -10], C, 40, ab)
-            label(c, "非洲", *lonlat_xy(20, 5), GRN, 40, ab)
+            label(c, "非洲", *lonlat_xy(20, 5), GRN, 40, ab * (1 - A(t, S[2], .3)))  # 數字框出現時淡出，避免透出
         if t > S[1]: text(c, "看起來差不多？", 1480, 180, 56, Y, "K", alpha=A(t, S[1]) * a)
         if t > S[2]:
             ab = A(t, S[2], .4) * a
             box(c, 960, 520, 1100, 300, DK, 225, 30, alpha=ab)
             text(c, "非洲 ≈ 14 × 格陵蘭", 960, 450, 92, Y, "K", alpha=ab, scale=.9 + .1 * eob(ab))
             bw = 900
-            box(c, 510 + bw / 2, 560, bw * eo(A(t, S[2] + .4, 1.)), 40, GRN, 255, 12, alpha=ab)
+            gw = bw * eo(A(t, S[2] + .4, 1.)); box(c, 510 + gw / 2, 560, gw, 40, GRN, 255, 12, alpha=ab)  # 由左往右長
             box(c, 510 + bw / 28, 620, bw / 14, 40, C, 255, 12, alpha=ab)
             text(c, "非洲 約 3,037 萬 km²", 520, 600 - 100, 0 + 30, WH, "B", anc="lm", alpha=0)
             text(c, "非洲 3,037 萬 km²", 1420, 560, 30, WH, "B", anc="rm", alpha=ab)
@@ -381,21 +382,25 @@ def sc_cost(c, t, S, L):
     if t > S[4]:
         a = A(t, S[4]); x, y = lonlat_xy(121, 23.5)
         put(c, circ(14, Y), x, y, alpha=a)
-        label(c, "台灣（約北緯 23.5°）≈ ×1.2", x - 20, y - 70, Y, 38, a)
+        label(c, "台灣（約北緯 23.5°）≈ ×1.2", x - 150, y - 70, Y, 38, a)
 
 def sc_true(c, t, S, L):
     put(c, basemap(), W / 2, H / 2, alpha=A(t, 0))
     overlay(c, GREEN, C, .35 * A(t, 0))
     pr = eo(clamp((t - S[0] - .6) / (S[2] - S[0] - .8))) if t > S[0] + .6 else 0
-    target_lat, target_dlon = 0 - 72 + 4, 0  # 中心約 72°N → 赤道附近，向東移到非洲西側
+    target_lat, target_dlon = 0 - 72 + 8, 14  # 中心約 72°N → 赤道附近，向東移到巴西與非洲之間的大西洋
     g2 = rotate_lat(GREEN, (target_lat) * pr, target_dlon * pr)
     overlay(c, g2, C, .95, outline=WH)
-    cx = np.vstack(g2); cxy = proj(np.array([[cx[:, 0].mean(), cx[:, 1].mean()]]))[0]
-    label(c, "格陵蘭", cxy[0], cxy[1] - 60 - 120 * (1 - pr), C, 34, 1)
+    gp = proj(np.vstack(g2)); cxy = gp.mean(0)
+    a2 = A(t, S[2]) if t > S[2] else 0
+    label(c, "格陵蘭", cxy[0], gp[:, 1].min() - 34 - 90 * (1 - pr), C, 34, 1 - a2)
     if t > S[2]:
-        a = A(t, S[2]); overlay(c, AFRICA, GRN, .8 * a)
-        label(c, "非洲 3,037 萬 km²", *lonlat_xy(22, 2), GRN, 38, a)
-        label(c, "格陵蘭 217 萬 km²", cxy[0] - 40, cxy[1] + 70, C, 34, a)
+        a = a2; overlay(c, AFRICA, GRN, .8 * a)
+        label(c, "非洲 3,037 萬 km²", *lonlat_xy(26, -19), GRN, 34, a)
+        lx, ly = 520, 720  # 太平洋空白處，用引線指回格陵蘭
+        line(c, (lx + 150, ly - 10), (gp[:, 0].min() + 4, cxy[1]), C, 3, a)
+        put(c, circ(6, C), gp[:, 0].min() + 4, cxy[1], alpha=a)
+        label(c, "格陵蘭 217 萬 km²", lx, ly, C, 32, a)
     if t > S[3]:
         a = A(t, S[3]); overlay(c, RUSSIA, P, .85 * a)
         box(c, 960, 860, 1240, 150, DK, 225, 24, alpha=a)
@@ -424,7 +429,7 @@ def sc_equal(c, t, S, L):
         label(c, lab, 960, 110, Y, 46, A(t, S[2]))
         if k > .95:
             overlay(c, GREEN, C, .85, k=1.); overlay(c, AFRICA, GRN, .85, k=1.)
-            label(c, "面積對了，形狀被拉歪", 960, 880, Y, 44, A(t, S[2] + 2.6))
+            label(c, "面積對了，形狀被拉歪", 960, 880, Y, 44, A(t, S[2] + 2.6) * (1 - A(t, S[3] - .35, .3)))
     if t > S[3]:
         a = A(t, S[3]); box(c, 960, 880, 1150, 100, DK, 235, 24, alpha=a, outline=Y, ow=4)
         text(c, "重點：你要拿地圖來做什麼？", 960, 880, 52, Y, "K", alpha=a)
